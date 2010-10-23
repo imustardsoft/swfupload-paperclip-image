@@ -2,9 +2,6 @@ swfupload is widely used on many web apps，especially the ones powered by ruby 
 
 Enviroment：rails 2.3.5   database: mysql
 
-The following address:
-git clone git@github.com:liyunqiang/swfupload-paperclip-image.git
-
 Just make sure you have the required gems, run the database migration, and start the server.
 
 rake db:create  //note password same
