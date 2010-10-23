@@ -1,0 +1,61 @@
+swfupload is widely used on many web apps，especially the ones powered by ruby on rails.Compared to Paperclip, which only can upload apicture a time，swfupload enables users to upload multiple pictures at same time with a very user-friendly interface and minimized number of clicks.
+
+Enviroment：rails 2.3.5   database: mysql
+
+The following address:
+git clone git@github.com:liyunqiang/swfupload-paperclip-image.git
+
+Just make sure you have the required gems, run the database migration, and start the server.
+
+rake db:create  //note password same
+rake gems:install
+rake db:migrate
+script/server
+
+browse to http://localhost:3000/photos/new
+
+below is the controller code that creates and stores the photos.
+photos_controller.rb
+def create
+   @photo = Photo.new(:swfupload_file => params[:Filedata])
+   if @photo.save
+     render :text => "#{@photo.file.url(:medium)}"
+     //text content is photo url
+   end
+end
+
+Below is the javascript that works with swf component.
+handlers.js
+function uploadSuccess(file, serverData) {
+    //serverDate is photos_controller render text content, this is photo url
+	try {
+		var progress = new FileProgress(file,  this.customSettings.upload_target);
+
+		if (serverData.substring(0, 11) === "/attachment") {
+			addImage(serverData);//to  addImage method
+			progress.setStatus("Upload Successfull.");
+			progress.toggleCancel(false);
+		} else {
+
+			addImage("/images/swfupload/error.gif");
+			progress.setStatus("Error.");
+			progress.toggleCancel(false);
+
+
+		}
+	} catch (ex) {
+		this.debug(ex);
+	}
+}
+
+function addImage(src) {
+        //src is a photo url
+        //add image to html
+        var append_photo = "<div class='photo_style'><img src='"+src+"' width='100' height='100' class='image_style'/></div>"
+
+        var contiar = document.getElementById("thumbnails");
+        contiar.innerHTML += append_photo;
+        //end
+}
+
+if you want to show some cool ajax effects, you can modify addImage method.

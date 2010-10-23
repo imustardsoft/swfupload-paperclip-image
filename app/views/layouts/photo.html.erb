@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <title>swfupload image</title>
+  
+  <%= stylesheet_link_tag 'compiled/swfupload' %>
+  <%= javascript_include_tag "jquery-1.3.2.min" %>
+  <%= javascript_include_tag "swfupload/swfupload" %>
+  <%= javascript_include_tag "swfupload/swfupload.swfobject" %>
+  <%= javascript_include_tag "swfupload/handlers" %>
+
+  <script type="text/javascript" charset="utf-8">
+    window._token = '<%= form_authenticity_token -%>'; 
+  </script>
+  
+  <script type="text/javascript">
+     SWFUpload.onload = function() {
+      var swf_settings = {
+
+        // SWFObject settings
+        minimum_flash_version: "9.0.28",
+        swfupload_pre_load_handler: function() {
+          $('#swfupload_degraded_container').hide();
+          $('#swfupload_container').show();
+        },
+        swfupload_load_failed_handler: function() {
+        },
+        <% session_key_name = ActionController::Base.session_options[:key] %>
+        post_params: {
+          "<%= session_key_name %>": "<%= cookies[session_key_name] %>",
+          "authenticity_token": "<%= form_authenticity_token %>",
+        },
+
+        upload_url: "#{photos_path}",
+        flash_url: '/flash/swfupload/swfupload.swf',
+
+        file_size_limit : '3 MB',
+        file_types : '*.jpg',
+        file_types_description : 'JPG Images',
+        file_upload_limit : '0',
+
+        button_placeholder_id: "spanButtonPlaceholder",
+        button_width: 380,
+        button_height: 32,
+        button_text : '<span class="button">Click Select Photos <span class="buttonSmall">(3 MB Max)</span></span>',
+        button_text_style : '.button { font-family: Helvetica, Arial, sans-serif; font-size: 20px;} .buttonSmall { font-size: 18pt; }',
+        button_text_top_padding: 0,
+        button_text_left_padding: 18,
+        button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+        button_cursor: SWFUpload.CURSOR.HAND,
+        file_queue_error_handler : fileQueueError,
+        file_dialog_complete_handler : fileDialogComplete,
+        upload_progress_handler : uploadProgress,
+        upload_error_handler : uploadError,
+        upload_success_handler : uploadSuccess,
+        upload_complete_handler : uploadComplete,
+
+        custom_settings : {
+          upload_target: "divFileProgressContainer"
+        }
+      }
+      var swf_upload = new SWFUpload(swf_settings);
+    };
+  </script>
+</head>
+  <body>
+    <%= flash[:notice] %>
+    <%= yield %>
+  </body>
+</html>
